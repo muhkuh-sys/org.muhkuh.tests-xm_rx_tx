@@ -287,9 +287,12 @@ int xm_transmit(unsigned int uiUnit, unsigned long ulTransmitClocks, unsigned lo
 				ulValue  = 2U;                                              /* Set a start bit. */
 				ulValue |= (((unsigned long)*pucCnt)^0x000000ffU) << 2U;    /* Add the inverted data. */
 				ulValue |= 0x0000f800U;                                     /* Add 1 stop bit and go back to idle. */
-				uprintf("Sending %04x\n", ulValue);
+/*				uprintf("Sending %04x\n", ulValue); */
 
 				ptXmac2Area->ulXmac_tx = ulValue;
+
+				/* Delay until the data is sent. */
+				systime_delay_ms(25);
 
 				++pucCnt;
 			}
