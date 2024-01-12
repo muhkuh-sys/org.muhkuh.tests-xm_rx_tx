@@ -101,8 +101,10 @@ local atBuildConfigurations = {
 -- Collect the build results in the environment.
 local tBuildEnv = {}
 
--- Create ELF file, ObjCopy file and ObjDump file for the netX90 communication CPU.
+-- Create ELF file, ObjCopy file and ObjDump file for all targets.
 for strBuildName, atBuildAttributes in pairs(atBuildConfigurations) do
+  local strBuildNameLower = string.lower(strBuildName)
+
   -- Create a new environment based on BASE_ENV
   local tEnv = atBuildAttributes.BASE_ENV:Clone()
   tBuildEnv[strBuildName] = tEnv
@@ -113,7 +115,7 @@ for strBuildName, atBuildAttributes in pairs(atBuildConfigurations) do
   -- Set ouput path for all sources in "src".
   tEnv:SetBuildPath(
     'src',
-    pl.path.join("targets",strBuildName,'build')
+    pl.path.join("targets", strBuildNameLower, 'build')
   )
 
   -- Build all sources.
@@ -124,7 +126,7 @@ for strBuildName, atBuildAttributes in pairs(atBuildConfigurations) do
 
   -- Now link the libraries to an ELF file.
   local tElf = tEnv:Link(
-    pl.path.join("targets",strBuildName,strBuildName .. ".elf"),
+    pl.path.join("targets", strBuildNameLower, strBuildNameLower .. ".elf"),
     atBuildAttributes.LDFILE,
     atObjects,
     tEnv.atVars.PLATFORM_LIB
@@ -132,13 +134,13 @@ for strBuildName, atBuildAttributes in pairs(atBuildConfigurations) do
 
   -- Create a complete dump of the ELF file.
   local tTxt = tEnv:ObjDump(
-    pl.path.join("targets",strBuildName,strBuildName .. ".txt"),
+    pl.path.join("targets", strBuildNameLower, strBuildNameLower .. ".txt"),
     tElf
   )
 
   -- Create a binary from the ELF file.
   local tBin = tEnv:ObjCopy(
-    pl.path.join("targets",strBuildName,atBuildAttributes.BIN_NAME .. ".bin"),
+    pl.path.join("targets", strBuildNameLower, atBuildAttributes.BIN_NAME .. ".bin"),
     tElf
   )
 
