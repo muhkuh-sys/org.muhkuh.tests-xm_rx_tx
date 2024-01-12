@@ -4,7 +4,7 @@
         {
             "label": "build",
             "type": "shell",
-            "command": "mbs2/mbs -r c -c && mbs2/mbs -r c",
+            "command": "mbs2/mbs -f",
             "problemMatcher": "$gcc",
             "group": {
                 "kind": "build",
