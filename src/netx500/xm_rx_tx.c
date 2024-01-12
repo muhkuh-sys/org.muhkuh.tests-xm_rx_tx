@@ -284,9 +284,9 @@ int xm_transmit(unsigned int uiUnit, unsigned long ulTransmitClocks, unsigned lo
 			while( pucCnt<pucEnd )
 			{
 				/* Construct a new data frame. */
-				ulValue  = 2U;                                              /* Set a start bit. */
-				ulValue |= (((unsigned long)*pucCnt)^0x000000ffU) << 2U;    /* Add the inverted data. */
-				ulValue |= 0x0000f800U;                                     /* Add 1 stop bit and go back to idle. */
+				ulValue  = 1U;                                /* Send 1 idle bit, then the start bit. */
+				ulValue |= ((unsigned long)*pucCnt) << 2U;    /* Add the data. */
+				ulValue |= 0x0000fc00U;                       /* Add 1 stop bit and go back to idle. */
 /*				uprintf("Sending %04x\n", ulValue); */
 
 				ptXmac2Area->ulXmac_tx = ulValue;
