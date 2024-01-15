@@ -26,7 +26,7 @@ atEnv.DEFAULT.atVars.BUILD_TYPE = 'RELEASE'
 -- FIXME: Move this to setup.json file
 atEnv.DEFAULT.atVars.PROJECT_VERSION =
 {
-  "1", "0", "0"
+  "2", "0", "0"
 }
 
 -- FIXME: Move this to setup.json file
