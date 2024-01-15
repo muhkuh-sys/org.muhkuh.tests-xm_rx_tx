@@ -3,3 +3,6 @@
 
 # Ignore all files in the targets folders.
 /targets/
+
+# Ignore the boiler plate for the next version.
+/next_version/
