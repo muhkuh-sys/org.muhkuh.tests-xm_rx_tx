@@ -28,6 +28,7 @@ typedef struct XM_RX_TX_PARAMETER_STRUCT
 	unsigned long ulMode_0Rx_1Tx;
 	unsigned int  uiUnit;
 	unsigned long ulSampleClocks;
+	unsigned long ulFlags;
 	unsigned long ulBufferSize;
 	unsigned char *pucBuffer;
 } XM_RX_TX_PARAMETER_T;

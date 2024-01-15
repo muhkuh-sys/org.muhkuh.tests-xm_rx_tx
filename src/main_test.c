@@ -49,6 +49,7 @@ TEST_RESULT_T test(XM_RX_TX_PARAMETER_T *ptTestParams)
 	uprintf(".          Mode: 0x%08x\n", ptTestParams->ulMode_0Rx_1Tx);
 	uprintf(".          Unit: 0x%08x\n", ptTestParams->uiUnit);
 	uprintf(". Sample clocks: 0x%08x\n", ptTestParams->ulSampleClocks);
+	uprintf(".         Flags: 0x%08x\n", ptTestParams->ulFlags);
 	uprintf(".   Buffer size: 0x%08x\n", ptTestParams->ulBufferSize);
 	uprintf(".        Buffer: 0x%08x\n", ptTestParams->pucBuffer);
 
@@ -68,7 +69,7 @@ TEST_RESULT_T test(XM_RX_TX_PARAMETER_T *ptTestParams)
 	else if( ulMode_0Rx_1Tx==1U )
 	{
 		uprintf("Transmit\n");
-		iResult = xm_transmit(ptTestParams->uiUnit, ptTestParams->ulSampleClocks, ptTestParams->ulBufferSize, ptTestParams->pucBuffer);
+		iResult = xm_transmit(ptTestParams->uiUnit, ptTestParams->ulSampleClocks, ptTestParams->ulBufferSize, ptTestParams->pucBuffer, ptTestParams->ulFlags);
 	}
 	else
 	{

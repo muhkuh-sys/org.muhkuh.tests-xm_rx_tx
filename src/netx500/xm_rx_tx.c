@@ -233,7 +233,7 @@ int xm_receive(unsigned int uiUnit, unsigned long ulSampleClocks, unsigned long 
 
 
 
-int xm_transmit(unsigned int uiUnit, unsigned long ulTransmitClocks, unsigned long ulBufferSize, const unsigned char *pucBuffer)
+int xm_transmit(unsigned int uiUnit, unsigned long ulTransmitClocks, unsigned long ulBufferSize, const unsigned char *pucBuffer, unsigned long ulFlags)
 {
 	int iResult;
 	unsigned long ulValue;
@@ -265,12 +265,22 @@ int xm_transmit(unsigned int uiUnit, unsigned long ulTransmitClocks, unsigned lo
 			ulValue  = HOSTMSK(xmac_config_obu_count_modulo);
 			ptXmac2Area->ulXmac_config_obu = ulValue;
 
-			/* Drive XM2_IO0 to 1. */
-			/* FIXME: This is only necessary for the DP card. Control this with a parameter. */
-			ulValue  = ptXpec0Area->aulStatcfg[2];
-			ulValue |= HOSTMSK(statcfg2_gpio0_out);
-			ulValue |= HOSTMSK(statcfg2_gpio0_oe);
-			ptXpec0Area->aulStatcfg[2] = ulValue;
+			if( (ulFlags&XM_TRANSMIT_FLAGS_Use_IO0_as_OE)!=0 )
+			{
+				ulValue  = ptXpec0Area->aulStatcfg[2];
+				ulValue |= HOSTMSK(statcfg2_gpio0_out);
+				if( (ulFlags&XM_TRANSMIT_FLAGS_Invert_OE)==0 )
+				{
+					/* Drive XM2_IO0 to 1. */
+					ulValue |= HOSTMSK(statcfg2_gpio0_oe);
+				}
+				else
+				{
+					/* Drive XM2_IO0 to 0. */
+					ulValue &= ~HOSTMSK(statcfg2_gpio0_oe);
+				}
+				ptXpec0Area->aulStatcfg[2] = ulValue;
+			}
 
 			/* Allow the TX line to settle. */
 			systime_delay_ms(100);
@@ -284,9 +294,18 @@ int xm_transmit(unsigned int uiUnit, unsigned long ulTransmitClocks, unsigned lo
 			while( pucCnt<pucEnd )
 			{
 				/* Construct a new data frame. */
-				ulValue  = 1U;                                /* Send 1 idle bit, then the start bit. */
-				ulValue |= ((unsigned long)*pucCnt) << 2U;    /* Add the data. */
-				ulValue |= 0x0000fc00U;                       /* Add 1 stop bit and go back to idle. */
+				if( (ulFlags&XM_TRANSMIT_FLAGS_Invert_TX)==0 )
+				{
+					ulValue  = 1U;                                /* Send 1 idle bit, then the start bit. */
+					ulValue |= ((unsigned long)*pucCnt) << 2U;    /* Add the data. */
+					ulValue |= 0x0000fc00U;                       /* Add 1 stop bit and go back to idle. */
+				}
+				else
+				{
+					ulValue  = 2U;                                        /* Send 1 idle bit, then the start bit. */
+					ulValue |= (((unsigned long)*pucCnt)^0xffU) << 2U;    /* Add the data. */
+					ulValue |= 0x0000f800U;                               /* Add 1 stop bit and go back to idle. */
+				}
 /*				uprintf("Sending %04x\n", ulValue); */
 
 				ptXmac2Area->ulXmac_tx = ulValue;
@@ -297,12 +316,14 @@ int xm_transmit(unsigned int uiUnit, unsigned long ulTransmitClocks, unsigned lo
 				++pucCnt;
 			}
 
-			/* Disable the driver for the XM2_IO0 pin. */
-			/* FIXME: This is only necessary for the DP card. Control this with a parameter. */
-			ulValue  = ptXpec0Area->aulStatcfg[2];
-			ulValue &= ~HOSTMSK(statcfg2_gpio0_out);
-			ulValue &= ~HOSTMSK(statcfg2_gpio0_oe);
-			ptXpec0Area->aulStatcfg[2] = ulValue;
+			if( (ulFlags&XM_TRANSMIT_FLAGS_Use_IO0_as_OE)!=0 )
+			{
+				/* Disable the driver for the XM2_IO0 pin. */
+				ulValue  = ptXpec0Area->aulStatcfg[2];
+				ulValue &= ~HOSTMSK(statcfg2_gpio0_out);
+				ulValue &= ~HOSTMSK(statcfg2_gpio0_oe);
+				ptXpec0Area->aulStatcfg[2] = ulValue;
+			}
 
 			/* Disable the driver for the TX pin. */
 			ulValue  = HOSTMSK(xmac_config_obu_count_modulo);

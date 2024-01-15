@@ -144,8 +144,15 @@ for strBuildName, atBuildAttributes in pairs(atBuildConfigurations) do
     tElf
   )
 
+  local tLua = tEnv:GccSymbolTemplate(
+    pl.path.join("targets", strBuildNameLower, 'xm_rx_tx.lua'),
+    tElf,
+    'templates/xm_rx_tx.lua'
+  )
+
   -- Store the build in the environment.
   tEnv.atVars.BIN_PATH = tBin
+  tEnv.atVars.LUA_PATH = tLua
 end
 
 ------------------------------------------------------------------------------
@@ -168,6 +175,9 @@ local atArtifacts =
     strProject_version = table.concat(atEnv.DEFAULT.atVars.PROJECT_VERSION,'.'),
     archive = {
       structure = {
+        ['lua'] = {
+          'targets/netx500/xm_rx_tx.lua'
+        },
         ['netx'] = {
           'targets/netx500/xm_rx_tx_netx500.bin'
         },
