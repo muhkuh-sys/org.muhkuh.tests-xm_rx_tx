@@ -24,8 +24,8 @@ static int setup_xc_unit(HOSTADEF(XMAC) *ptXmac, unsigned long ulClocks)
 		/* Setup the RX unix. */
 		ptXmac->ulXmac_sbu_rate_mul_add   = 0x0001;
 		ptXmac->ulXmac_sbu_rate_mul_start = 0xffffU - ulClocks;
-		ptXmac->ulXmac_start_sample_pos   = 0xffffU - ulClocks + 32U;
-		ptXmac->ulXmac_stop_sample_pos    = 0xffffU - 32U;
+		ptXmac->ulXmac_start_sample_pos   = 0xffffU - ulClocks + 40U;
+		ptXmac->ulXmac_stop_sample_pos    = 0xffffU - 40U;
 
 		ulValue  = 1U << HOSTSRT(xmac_config_sbu_count_modulo);
 		ulValue |= HOSTMSK(xmac_config_sbu_sync_to_bitstream);
